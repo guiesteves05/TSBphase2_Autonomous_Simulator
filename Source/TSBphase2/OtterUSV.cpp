@@ -4,15 +4,22 @@
 #include "OtterUSV.h"
 #include "Components/PrimitiveComponent.h"
 
-// Sets default values
+/**
+ * @brief Sets default values for this pawn's properties.
+ * Configures the actor to tick every frame, allowing for continuous physics calculation.
+ */
 AOtterUSV::AOtterUSV()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
 
-// Called when the game starts or when spawned
+/**
+ * @brief Called when the game starts or when spawned.
+ * Initializes the UDP socket for the ROS2 network bridge and overrides the
+ * default Unreal Engine physics properties (Mass and Inertia Tensor) to match
+ * the strict Fossen mathematical model for the Otter USV.
+ */
 void AOtterUSV::BeginPlay()
 {
 	Super::BeginPlay();
@@ -47,6 +54,11 @@ void AOtterUSV::BeginPlay()
 	
 }
 
+/**
+ * @brief Calculates non-linear thrust based on the official BlueRobotics T200 curves.
+ * * @param CurrentAmps The simulated current draw in Amperes (typically -20A to 20A).
+ * @return The resulting thrust force in Newtons.
+ */
 float AOtterUSV::GetT200Thrust(float CurrentAmps)
 {
 	float ThrustNewtons = 0.0f;
@@ -63,7 +75,12 @@ float AOtterUSV::GetT200Thrust(float CurrentAmps)
 	return ThrustNewtons;
 }
 
-// Called every frame
+/**
+ * @brief Called every frame.
+ * Handles the core physics integration: reads inputs, calculates T200 thruster forces,
+ * applies Fossen hydrodynamic damping (Surge, Sway, Yaw), and triggers sensor simulation.
+ * * @param DeltaTime The time elapsed since the last frame.
+ */
 void AOtterUSV::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -119,7 +136,7 @@ void AOtterUSV::Tick(float DeltaTime)
 		BoatMesh->AddTorqueInRadians(TurnTorque);
 
 
-		//HYDRODYNAMIC DAMPING:
+		//HYDRODYNAMIC DAMPING (FOSSEN 3-DOF):
 
 		// Get the boat's velocity (local to the boat, not the world)
 		FVector GlobalVelocity = BoatMesh->GetComponentVelocity();
@@ -152,16 +169,18 @@ void AOtterUSV::Tick(float DeltaTime)
 	SimulateSensors(DeltaTime);
 }
 
-// Called to bind functionality to input
+/**
+ * @brief Binds standard Unreal Engine input axes to the local movement functions.
+ */
 void AOtterUSV::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// Bind UE input names to the movement functions 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AOtterUSV::MoveForward);
 	PlayerInputComponent->BindAxis("TurnRight", this, &AOtterUSV::TurnRight);
 
 }
+
 
 void AOtterUSV::MoveForward(float Value)
 {
@@ -173,10 +192,21 @@ void AOtterUSV::TurnRight(float Value)
 	RightInput = Value;
 }
 
+/**
+ * @brief Helper function to generate pseudo-random Gaussian noise.
+ * * @param Variance The maximum variance to apply.
+ * @return A randomized float between -Variance and +Variance.
+ */
 float AOtterUSV::GenerateNoise(float Variance) {
 	return FMath::FRandRange(-Variance, Variance);
 }
 
+/**
+ * @brief Packages current physical state into degraded sensor readings.
+ * Injects noise, simulates network latency (10Hz capping), and handles random dropouts.
+ * Serializes the output into a JSON payload for the Python ROS2 bridge.
+ * * @param DeltaTime Time elapsed since last frame.
+ */
 void AOtterUSV::SimulateSensors(float DeltaTime) {
 	
 	//Simulate Signal Latency
@@ -226,7 +256,10 @@ void AOtterUSV::SimulateSensors(float DeltaTime) {
 }
 
 
-// Cleanup UDP Socket on end play
+/**
+ * @brief Overrides the standard EndPlay sequence to clean up networking components.
+ * Prevents memory leaks and zombie network ports when stopping the simulator.
+ */
 void AOtterUSV::EndPlay(const EEndPlayReason::Type EndPlayReason) {
 	
 	Super::EndPlay(EndPlayReason);
@@ -237,7 +270,12 @@ void AOtterUSV::EndPlay(const EEndPlayReason::Type EndPlayReason) {
 	}
 }
 
-// Takes a standard string, formats it for the network, and fires it to your WSL local IP
+
+/**
+ * @brief Formats a standard Unreal Engine string and broadcasts it via UDP.
+ * Targeted to localhost (127.0.0.1) on Port 9090 where the Python ROS2 bridge listens.
+ * * @param Message The string/JSON payload to broadcast.
+ */
 void AOtterUSV::SendUDPMessage(FString Message) {
 	
 	if (!UDPSocket) return;
