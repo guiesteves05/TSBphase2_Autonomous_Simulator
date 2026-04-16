@@ -1,0 +1,5 @@
+Para a implementação do modelo do OTTER no projeto, basta introduzir na pasta content da Unreal Engine, a pasta dada que conterá a static mesh do OTTER e partir dai podem implementa-lo.
+ 
+Simplificações:
+-Para implementação a Buoyancy podem simplificar o OTTER a uma esfera, outra figura geométrica, já que para o recrutamento não necessário um Buoyancy mais complexa.
+
