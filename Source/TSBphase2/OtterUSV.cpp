@@ -295,8 +295,3 @@ void AOtterUSV::SendUDPMessage(FString Message) {
 	int32 BytesSent = 0;
 	UDPSocket->SendTo(SendBuffer.GetData(), SendBuffer.Num(), BytesSent, *TargetAddr);
 }
-
-
-
-
-
