@@ -193,7 +193,7 @@ void AOtterUSV::TurnRight(float Value)
 }
 
 /**
- * @brief Helper function to generate pseudo-random Gaussian noise.
+ * @brief Helper function to generate pseudo-random Uniform noise.
  * * @param Variance The maximum variance to apply.
  * @return A randomized float between -Variance and +Variance.
  */
@@ -283,7 +283,7 @@ void AOtterUSV::SendUDPMessage(FString Message) {
 	// Target Address: 127.0.0.1 (Localhost / WSL) on Port 9090
 	TSharedRef<FInternetAddr> TargetAddr = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
 	FIPv4Address IP;
-	FIPv4Address::Parse(TEXT("127.0.0.1"), IP);
+	FIPv4Address::Parse(TEXT("127.0.0.1"), IP); // Localhost IP
 	TargetAddr->SetIp(IP.Value);
 	TargetAddr->SetPort(9090);
 

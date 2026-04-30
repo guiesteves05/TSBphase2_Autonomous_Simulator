@@ -76,5 +76,7 @@ TSBphase2_Autonomous_Simulator
 │       └── TSBphase2.Build.cs # Build rules
 ├── ros2_bridge.py           # Python UDP listener and ROS2 node mocking
 ├── README.md                # Project documentation
-└── TSBphase2.uproject       # Unreal Engine project file
+├── TSBphase2.uproject       # Unreal Engine project file
+├── ASVSimulation.pptx       # PowerPoint Presentation of the Project
+└── ReportPhase1.pdf         # Theoretical Report for the Previous Recruitment Phase
 ```

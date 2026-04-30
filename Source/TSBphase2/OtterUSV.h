@@ -82,7 +82,7 @@ public:
 	//Sensor Functions:
 	void SimulateSensors(float DeltaTime); // Function to simulate sensor readings, noise and failure
 
-	// Helper function to generate Gaussian noise with specified variance
+	// Helper function to generate Uniform noise with specified variance
 	float GenerateNoise(float Variance); 
 
 	//UDP ROS2 BRIDGE
