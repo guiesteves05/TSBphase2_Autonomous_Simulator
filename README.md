@@ -12,7 +12,7 @@ This repository contains a real time physics based simulator developed for the *
 * **Physics & Dynamics:** Implemented a 3-DOF model using Fossen's equations of motion (Surge, Sway, Yaw) for accurate marine hydrodynamics.
 * **Non-Linear Propulsion:** Custom differential drive system mimicking the official BlueRobotics T200 thruster performance curves (current-to-thrust).
 * **Virtual Sensor Suite:** Simulated GPS, AHRS and 360-degree LiDAR raycasting.
-* **Real-World Degradation:** Programmatic injection of Gaussian noise, signal latency (10Hz capping), and intermittent sensor dropouts to stress test control algorithms.
+* **Real-World Degradation:** Programmatic injection of Uniform noise, signal latency (10Hz capping), and intermittent sensor dropouts to stress test control algorithms.
 * **ROS2 Bridge Architecture:** A lightweight UDP networking layer that streams JSON telemetry from Unreal Engine to a Python based ROS2 bridge, ensuring clean separation between the simulation and control layers.
 
 ---
